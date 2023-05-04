@@ -1,12 +1,9 @@
-import { useState, createContext } from "react";
-import { auth } from "../FirebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useAuthContext } from "../context/AuthContext";
+import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link } from "react-router-dom";
-export const IsLogin = createContext();
-
-function SignUp() {
-	const { user } = useAuthContext();
+import { auth } from "../FirebaseConfig";
+import { Navigate } from "react-router-dom";
+function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
@@ -18,13 +15,17 @@ function SignUp() {
 	};
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(email, password);
-		createUserWithEmailAndPassword(auth, email, password);
+		console.log(auth, email, password);
+		signInWithEmailAndPassword(auth, email, password)
+			.then(() => {
+				console.log("サインインに成功しました");
+				return <Navigate to={"/"} />;
+			})
+			.catch((error) => console.log(error));
 	};
-
 	return (
 		<div>
-			<h1>ユーザー登録</h1>
+			<h1>ログイン画面</h1>
 			<form onSubmit={handleSubmit}>
 				<div>
 					<label htmlFor='email'>メールアドレス：</label>
@@ -48,15 +49,13 @@ function SignUp() {
 						value={password}
 					/>
 				</div>
-				<button>登録</button>
-
+				<button>ログイン</button>
 				<div>
-					すでに登録済みの方は<Link to={"/login"}>こちらからログイン</Link>
-					してください
+					ユーザー登録は<Link to={"/signup"}>こちら</Link>から
 				</div>
 			</form>
 		</div>
 	);
 }
 
-export default SignUp;
+export default Login;
